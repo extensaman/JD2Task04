@@ -24,7 +24,11 @@ public class PersonCreator {
 
     public Person create() {
         int age;
-        while (Validator.isAgeValid(age = random.nextInt(LIVE_LIMIT)));
-        return new Person(Surnames.values()[0].toString(),Names.values()[0].toString(),age);
+        while (!Validator.isAgeValid(age = random.nextInt(LIVE_LIMIT)));
+        Surnames[] surnames = Surnames.values();
+        Names[] names = Names.values();
+        return new Person(surnames[random.nextInt(surnames.length)].toString(),
+                names[random.nextInt(names.length)].toString(),
+                age);
     }
 }

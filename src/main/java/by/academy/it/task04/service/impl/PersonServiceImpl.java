@@ -17,7 +17,6 @@ import java.util.stream.Stream;
 public class PersonServiceImpl implements PersonService {
     public static final String SPACE = " ";
     public static final int AGE_LIMIT = 21;
-    public static final int PERSON_LIMIT = 100;
     private final PersonDao personDao;
     private final Output output;
 
@@ -27,18 +26,24 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public void operate() throws PersonServiceException {
-        List<Person> personsToDao = Stream.generate(PersonCreator.getInstance()::create)
-                .filter(person -> person.getAge() < AGE_LIMIT)
-                .limit(PERSON_LIMIT)
+    public List<Person> generateList(int count) {
+        return Stream.generate(PersonCreator.getInstance()::create)
+                .limit(count).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Person> makeFirstTaskSample(List<Person> people) {
+        return people.stream().filter(person -> person.getAge() < AGE_LIMIT)
                 .peek(output::printPerson)
                 .sorted(Comparator.comparing(Person::getSurname).thenComparing(Person::getName))
-                .peek(output::printPerson)
                 .distinct()
                 .collect(Collectors.toList());
+    }
 
+    @Override
+    public Collection<Person> writeReadPersonList(List<Person> people) throws PersonServiceException {
         try {
-            personDao.writeCollection(personsToDao);
+            personDao.writeCollection(people);
         } catch (PersonDaoException e) {
             throw new PersonServiceException(e);
         }
@@ -49,9 +54,17 @@ public class PersonServiceImpl implements PersonService {
         } catch (PersonDaoException e) {
             throw new PersonServiceException(e);
         }
+        return personsFromDao;
+    }
 
-        personsFromDao.stream()
-                .map(person -> "".concat(person.getSurname()).concat(SPACE).concat(person.getName()))
-                .forEach(output::printString);
+    @Override
+    public List<String> makeSecondTaskSample(Collection<Person> people) {
+        return people.stream()
+                .map(person -> person.getSurname() +
+                        SPACE +
+                        person.getName() +
+                        "\n")
+                .peek(output::printString)
+                .collect(Collectors.toList());
     }
 }

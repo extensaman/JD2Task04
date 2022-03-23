@@ -6,6 +6,7 @@ import by.academy.it.task04.entity.Person;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -29,8 +30,12 @@ public class PersonDaoImpl implements PersonDao {
     public Collection<Person> readCollection() throws PersonDaoException {
         Collection<Person> people = new ArrayList<>();
         try (ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(inputFile)))) {
-            while (ois.available() > 0) {
-                people.add((Person) ois.readObject());
+            while (true) {
+                try{
+                    people.add((Person) ois.readObject());
+                } catch (EOFException e) {
+                    break;
+                }
             }
         } catch (IOException | ClassNotFoundException e) {
             throw new PersonDaoException(e);
@@ -44,6 +49,7 @@ public class PersonDaoImpl implements PersonDao {
             for (Person person : people) {
                 oos.writeObject(person);
             }
+            oos.flush();
         } catch (IOException e) {
             throw new PersonDaoException(e);
         }

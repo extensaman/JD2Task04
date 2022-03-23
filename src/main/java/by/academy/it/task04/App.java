@@ -1,11 +1,20 @@
 package by.academy.it.task04;
 
+import by.academy.it.task04.controller.PersonController;
+import by.academy.it.task04.controller.PersonControllerException;
+import by.academy.it.task04.controller.impl.PersonControllerImpl;
+import by.academy.it.task04.dao.PersonDao;
+import by.academy.it.task04.dao.impl.PersonDaoImpl;
+import by.academy.it.task04.service.PersonService;
+import by.academy.it.task04.service.impl.PersonServiceImpl;
+import by.academy.it.task04.view.Output;
+import by.academy.it.task04.view.impl.ConsoleOutput;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
  * Making a program in maven, covering it with unit tests
- *
+ * <p>
  * PART 1.
  * Create a class Person, with fields "name, surname, age". Generate a group of 100 people aged 15 to 30.
  * 1) select objects whose age is less than 21;
@@ -17,7 +26,7 @@ import org.apache.logging.log4j.Logger;
  * 7) using stream for creating a new collection (List<String>) containing only surnames and names for objects
  * that were read from file
  * 8) display
- *
+ * <p>
  * PART 2.
  * Create MySQL database 'People'
  * create a 'Person' table in this database with fields:
@@ -30,23 +39,29 @@ import org.apache.logging.log4j.Logger;
  * -dateTimeCreate- Date and time
  * -timeToLunch - Time (only)
  * -letter - Large text
- *
+ * <p>
  * Add 5 arbitrary Persons
  * Select from this table all Persons with age > 21, and sort this selection by the 'dateTimeCreate' field.
- *
+ * <p>
  * The scripts that do all this need to be uploaded to git and create a PullRequest.
  *
  * @author Yusikau Aliaksandr
  * @version 1.0
  */
 
-public class App 
-{
+public class App {
     private static final Logger logger = LogManager.getLogger(App.class);
+    public static final String INOUT_PATH = "inout.obj";
 
-    public static void main( String[] args )
-    {
-
-        System.out.println( "Hello World!" );
+    public static void main(String[] args) {
+        Output output = ConsoleOutput.getInstance();
+        PersonDao dao = new PersonDaoImpl(INOUT_PATH, INOUT_PATH);
+        PersonService service = new PersonServiceImpl(dao, output);
+        PersonController controller = new PersonControllerImpl(service);
+        try {
+            controller.execute();
+        } catch (PersonControllerException e) {
+            logger.error(e.fillInStackTrace());
+        }
     }
 }
