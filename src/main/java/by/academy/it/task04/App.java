@@ -27,7 +27,7 @@ import org.apache.logging.log4j.Logger;
  * that were read from file
  * 8) display
  * <p>
- * PART 2.
+ * PART 2 (result is in folder /main/resources/part2.sql).
  * Create MySQL database 'People'
  * create a 'Person' table in this database with fields:
  * -id - Integers (identifier)
